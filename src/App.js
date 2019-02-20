@@ -1,26 +1,87 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
+import uuid from 'uuid';
+import Todos from './components/Todos';
+import AddTodo from './components/AddTodo';
+import Header from './components/layout/Header';
+import About from './components/pages/About';
 import './App.css';
 
 class App extends Component {
+  state = {
+    todos: [
+      {
+        id: uuid.v4(),
+        title: 'Cook my wif some food',
+        completed: false
+      },
+      {
+        id: uuid.v4(),
+        title: 'hey there peter',
+        completed: false
+      },
+      {
+        id: uuid.v4(),
+        title: 'Dinner with my wife neighbour',
+        completed: false
+      },
+    ]
+  }
+
+  Complete = (id) =>{
+    console.log(id);
+    
+  }
+
+  markComplete = (id) => {
+    this.setState({
+      todos: this.state.todos.map(todo => {
+        if(todo.id === id){
+          todo.completed = !todo.completed
+        }
+        return todo;
+      })
+    })
+
+  }
+
+  // delete
+  delTodo = (id) => {
+    this.setState({
+      todos: [...this.state.todos.filter(todo => todo.id !== id)]
+    })
+    
+  }
+
+  addTodo = (title) => {
+    const newTodo = {
+      id: uuid.v4(), 
+      title,
+      completed:false
+    }
+    this.setState({
+      todos: [...this.state.todos, newTodo]
+    })
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div className="App">
+          <div className="container">
+            <Header />
+            <Route exact path="/" render={props => (
+              <React.Fragment>
+                <AddTodo addTodo={this.addTodo} />
+                {/* <Todos todos={this.state.todos} markComplete={this.markComplete} delTodo={this.delTodo} /> */}
+                <Todos todos={this.state.todos} Complete={this.Complete} delTodo={this.delTodo} />
+              </React.Fragment>
+            )} />
+            <Route path="/about" component={About} />
+            {/* <h1>hello</h1> */}
+          </div>
+        </div>
+      </Router>
     );
   }
 }
